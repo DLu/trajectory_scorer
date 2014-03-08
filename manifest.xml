@@ -1,0 +1,20 @@
+<package>
+  <description brief="trajectory_scorer">
+
+     trajectory_scorer
+
+  </description>
+  <author>David!!</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/trajectory_scorer</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="dwa_local_planner"/>
+  <depend package="costmap_2d"/>
+  <depend package="nav_core"/>
+  <depend package="base_local_planner"/>
+
+</package>
+
+
