@@ -1,0 +1,12 @@
+float32 x
+float32 y
+float32 theta
+float32 vx
+float32 vy
+float32 vtheta
+float32 cvx
+float32 cvy
+float32 cvtheta
+---
+float32 score
+

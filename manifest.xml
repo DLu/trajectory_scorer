@@ -14,6 +14,7 @@
   <depend package="costmap_2d"/>
   <depend package="nav_core"/>
   <depend package="base_local_planner"/>
+  <depend package="std_srvs"/>
 
 </package>
 
