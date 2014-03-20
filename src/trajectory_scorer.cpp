@@ -1,6 +1,7 @@
 #include <dwa_local_planner/dwa_planner_ros.h>
 #include <std_srvs/Empty.h>
 #include<trajectory_scorer/ScoreTrajectory.h>
+#include<nav_msgs/Path.h>
 
 class Scorer {
     public:
@@ -8,6 +9,8 @@ class Scorer {
         ros::NodeHandle nh("~");
         a = nh.advertiseService("reset", &Scorer::callback, this);
         b = nh.advertiseService("score", &Scorer::score, this);
+        sub = nh.subscribe<nav_msgs::Path>("plan", 1, boost::bind(&Scorer::get_plan, this, _1)); 
+
         reset();
     }
     
@@ -28,6 +31,12 @@ class Scorer {
         return true;
     }
     
+    void get_plan(const nav_msgs::Path::ConstPtr& path)
+    {
+        ROS_INFO("GOT PLAN %d", path->poses.size());
+        planner->setPlan(path->poses);
+    }
+    
     private:
         void reset(){ 
             if(planner) delete planner;
@@ -43,6 +52,7 @@ class Scorer {
     dwa_local_planner::DWAPlannerROS* planner;
     costmap_2d::Costmap2DROS* costmap;
     ros::ServiceServer a,b;
+    ros::Subscriber sub;
 };
 
 
@@ -50,25 +60,6 @@ int main(int argc, char** argv)
 {
     ros::init(argc, argv, "trajectory_scorer");
     
-    /*double x = 2, y = 0;
-    if(argc>1){
-        if(argc>2){
-            x = atof(argv[1]);
-            y = atof(argv[2]);
-        }
-    }
-    
-    std::vector<geometry_msgs::PoseStamped> plan;
-    int N = 100;
-    for(int i=0;i<N;i++){
-        geometry_msgs::PoseStamped pose;
-        pose.header.frame_id = "/map";
-        pose.pose.orientation.w = 1.0;
-        pose.pose.position.x = i * x / N;
-        pose.pose.position.y = i * y / N;
-        plan.push_back(pose);
-    }
-    //planner.setPlan(plan);*/
     Scorer s;
     ros::spin();
 
