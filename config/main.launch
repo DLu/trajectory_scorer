@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find simple_costmap_configuration)/launch/transforms.launch" />
+    <rosparam file="$(find trajectory_scorer)/config/dwa.yaml" command="load" ns="/trajectory_scorer" />
+</launch>
