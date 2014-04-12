@@ -25,7 +25,7 @@ class Scorer {
                trajectory_scorer::ScoreTrajectory::Response& request)
     {
         
-        double s = planner->scoreTrajectory(r.x,0,0,0,0,0,r.cvx, 0,0);
+        double s = planner->scoreTrajectory(r.x,r.y,r.theta,r.vx,r.vy,r.vtheta,r.cvx,r.cvy,r.cvtheta);
         ROS_INFO("Score: %f", s);
         request.score = s;
         return true;
