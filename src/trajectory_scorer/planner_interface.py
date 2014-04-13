@@ -1,12 +1,12 @@
 import rospy
-from trajectory_scorer.srv import ScoreTrajectory
+from trajectory_scorer.srv import *
 from nav_msgs.msg import Path
 from std_srvs.srv import Empty
 from numpy import arange
 from geometry_msgs.msg import PoseStamped
 from tf.transformations import quaternion_from_euler
 S_NAME = '/trajectory_scorer/score'
-
+P_NAME = '/trajectory_scorer/plan'
 R_NAME = '/trajectory_scorer/reset'
 
 def param(n):
@@ -26,12 +26,15 @@ def get_range(ax):
 class PlannerInterface:
     def __init__(self):
         rospy.wait_for_service(S_NAME)
-        print 'Ready'
         self.score_srv = rospy.ServiceProxy(S_NAME, ScoreTrajectory)
-        self.pub = rospy.Publisher('/trajectory_scorer/plan', Path, latch=True)
-        self.critics = rospy.get_param('/trajectory_scorer/planner/critics')
+        rospy.wait_for_service(P_NAME)
+        self.plan_srv = rospy.ServiceProxy(P_NAME, MakeLocalPlan)
         rospy.wait_for_service(R_NAME)
         self.reset = rospy.ServiceProxy(R_NAME, Empty)
+        print 'Ready'
+        self.pub = rospy.Publisher('/trajectory_scorer/plan', Path, latch=True)
+        self.critics = rospy.get_param('/trajectory_scorer/planner/critics')
+        
         
     def set_critics(self, critics):
         if critics != self.critics:
@@ -64,15 +67,7 @@ class PlannerInterface:
         resp = self.score_srv(x,y,z,vx,vy,vz,cvx,cvy,cvz)
         return resp.score
         
-    def plan(self, x=0.0, y=0.0, z=0.0):
-        bests = 1E11
-        best = None
-        for cvx in get_range('x'):
-            for cvy in get_range('y'):
-                for cvz in get_range('th'):
-                    s = self.score(x,y,z,cvx=cvx,cvy=cvy,cvz=cvz)
-                    if s >= 0 and s < bests:
-                        best = [cvx,cvy,cvz]
-                        bests=s
-        return best
+    def plan(self, x,y,z):
+        resp = self.plan_srv(x,y,z)
+        return [resp.x, resp.y, resp.theta]
     
