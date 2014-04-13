@@ -2,6 +2,7 @@ import numpy
 import matplotlib
 import matplotlib.pyplot as plt
 import pylab
+from numpy import arange
 
 
 def limit(labels, n):
@@ -28,10 +29,10 @@ def heatmap(D, include_black=False, x_axis=None, y_axis=None, x_label='', y_labe
 
     heatmap = ax.pcolor(mdata,cmap=new_map)
 
-    if x_axis is None:
+    if x_axis is not None:
         ax.set_xticks(arange(len(x_axis))+0.5, minor=False)
         ax.set_xticklabels(limit(x_axis,10))        
-    if y_axis is None:
+    if y_axis is not None:
         ax.set_yticks(arange(len(y_axis))+0.5, minor=False)
         ax.set_yticklabels(limit(y_axis,10))
 
