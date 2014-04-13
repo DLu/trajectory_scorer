@@ -21,13 +21,17 @@ def heatmap(D, include_black=False, x_axis=None, y_axis=None, x_label='', y_labe
     if include_black:
         colors.append('black')
 
-    new_map = matplotlib.colors.LinearSegmentedColormap.from_list('new_map', colors, N=256)
+    heatmap_custom_color(D, colors, x_axis, y_axis, x_label, y_label, label)
 
+    
+def heatmap_custom_color(D, color_list, x_axis=None, y_axis=None, x_label='', y_label='', label=''):
     mdata = numpy.array(D) 
 
     fig, ax = plt.subplots()
+    
+    color_map = matplotlib.colors.LinearSegmentedColormap.from_list('new_map', color_list, N=len(color_list))
 
-    heatmap = ax.pcolor(mdata,cmap=new_map)
+    heatmap = ax.pcolor(mdata,cmap=color_map)
 
     if x_axis is not None:
         ax.set_xticks(arange(len(x_axis))+0.5, minor=False)
@@ -41,3 +45,4 @@ def heatmap(D, include_black=False, x_axis=None, y_axis=None, x_label='', y_labe
     plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.show()
+    
