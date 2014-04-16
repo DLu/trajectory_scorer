@@ -69,5 +69,5 @@ class PlannerInterface:
         
     def plan(self, x,y,z):
         resp = self.plan_srv(x,y,z)
-        return [resp.x, resp.y, resp.theta]
+        return (resp.x, resp.y, resp.theta)
     
