@@ -27,7 +27,8 @@ R1 = apply(arange, SAVES[Y_AXIS])
 R2 = apply(arange, SAVES[X_AXIS])
 
 M = {}
-for v1 in R1:
+for i,v1 in enumerate(R1):
+    print "%.2f"%(float(i)/len(R1))
     M[Y_AXIS] = v1
     r = []
     for v2 in R2:
@@ -36,42 +37,45 @@ for v1 in R1:
                   M.get('y', 0.0),
                   M.get('z', 0.0)
                  )
-        print v2,v1,cmd
         r.append( cmd )
     D.append(r)
+    
+plt.figure()
 
-extremes = [{},{},{}]
 for i in range(3):
+    minx = 1E6
+    maxx = -1E6
     for r in D:
         for a in r:
-            extremes[i]['max'] = max(a[i], extremes[i].get('max', -1E6))
-            extremes[i]['min'] = min(a[i], extremes[i].get('min', 1E6))
-           
-data =[]
-cmap = {}
-colors = []
-
-
-for r in D:
-    nr = []
-    for x,y,z in r:
-        xfrac = (x-extremes[0]['min'])/(extremes[0]['max']-extremes[0]['min'])
-        yfrac = (y-extremes[1]['min'])/(extremes[1]['max']-extremes[1]['min'])
-        zfrac = (z-extremes[2]['min'])/(extremes[2]['max']-extremes[2]['min'])
-        key = xfrac,yfrac,zfrac
-        if key in cmap:
-            c = cmap[key]
-        else:
-            cmap[key] = len(colors)
-            c = cmap[key]
-            #if xfrac + yfrac + zfrac == 0:
-            colors.append( (1-xfrac,1-yfrac,1-zfrac) )
-            #else:
-            #    colors.append( (0,0,0))
-        nr.append(c)
-    data.append(nr)
-
+            minx = min(minx, a[i])
+            maxx = max(maxx, a[i])
+            
+    cmap = {}
+    colors = []
+    data = []
+    
+    for r in D:
+        nr = []
+        for a in r:
+            frac = a[i]/max(abs(maxx), abs(minx))
+            
+            if frac in cmap:
+                c = cmap[frac]
+            else:
+                cmap[frac] = len(colors)
+                c = cmap[frac]
+                af = abs(frac)
+                if a[i] >= 0:
+                    colors.append( (1,1-af,1-af) )
+                else:
+                    colors.append( (1-af,1-af,1) )
+                    
+                #print "%.2f %.2f %s"%(a[i], af, "%.1f %.1f %.1f"%colors[-1])
+            nr.append(c)
+        data.append(nr)
+    ax = plt.subplot(3,1,i+1)
+    heatmap_custom_color(data, colors, x_axis=R2, y_axis=R1, x_label=X_AXIS, y_label=Y_AXIS, label=['x','y','theta'][i], ax=ax)    
 T = ', '.join(p.critics)
 
-heatmap_custom_color(data, colors, x_axis=R2, y_axis=R1, x_label=X_AXIS, y_label=Y_AXIS, label=T)
 
+show()

@@ -24,10 +24,11 @@ def heatmap(D, include_black=False, x_axis=None, y_axis=None, x_label='', y_labe
     heatmap_custom_color(D, colors, x_axis, y_axis, x_label, y_label, label)
 
     
-def heatmap_custom_color(D, color_list, x_axis=None, y_axis=None, x_label='', y_label='', label=''):
+def heatmap_custom_color(D, color_list, x_axis=None, y_axis=None, x_label='', y_label='', label='', ax=None):
     mdata = numpy.array(D) 
 
-    fig, ax = plt.subplots()
+    if ax is None:
+        fig, ax = plt.subplots()
     
     color_map = matplotlib.colors.LinearSegmentedColormap.from_list('new_map', color_list, N=len(color_list))
 
@@ -44,5 +45,7 @@ def heatmap_custom_color(D, color_list, x_axis=None, y_axis=None, x_label='', y_
     ax.set_title(label)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
+
+def show():
     plt.show()
     
