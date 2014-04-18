@@ -33,7 +33,7 @@ class PlannerInterface:
         self.reset = rospy.ServiceProxy(R_NAME, Empty)
         print 'Ready'
         self.pub = rospy.Publisher('/trajectory_scorer/plan', Path, latch=True)
-        self.critics = rospy.get_param('/trajectory_scorer/planner/critics')
+        self.critics = rospy.get_param('/trajectory_scorer/planner/critics', {})
         
         
     def set_critics(self, critics):

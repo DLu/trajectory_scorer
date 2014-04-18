@@ -4,7 +4,7 @@ import rospy
 from math import radians
 from trajectory_scorer.planner_interface import PlannerInterface
 from trajectory_scorer.heatmap import *
-from numpy import arange
+from numpy import arange, append
 
 rospy.init_node('score_script')
 
@@ -16,15 +16,16 @@ D = []
 
 SAVES = {
     'x': (-1.0, 4.0, .25),
-    'y': (-1.0, 1.01, .25),
-    'z': (0.0, 3.15, 0.5)
+    'y': (-1.0, 1.0, .25),
+    'z': (-3.15, 3.15, 0.5)
 }
 
 X_AXIS = 'x'
 Y_AXIS = 'y'
-
-R1 = apply(arange, SAVES[Y_AXIS])
-R2 = apply(arange, SAVES[X_AXIS])
+R1 = apply(arange, SAVES[Y_AXIS]) 
+R2 = apply(arange, SAVES[X_AXIS]) 
+R1 = append(R1, SAVES[Y_AXIS][1])
+R2 = append(R2, SAVES[X_AXIS][1])
 
 M = {}
 for i,v1 in enumerate(R1):
@@ -39,7 +40,7 @@ for i,v1 in enumerate(R1):
                  )
         r.append( cmd )
     D.append(r)
-    
+
 plt.figure()
 
 for i in range(3):
@@ -53,11 +54,14 @@ for i in range(3):
     cmap = {}
     colors = []
     data = []
+    d = max(abs(maxx), abs(minx))
+    if d==0.0:
+        d = 1.0
     
     for r in D:
         nr = []
         for a in r:
-            frac = a[i]/max(abs(maxx), abs(minx))
+            frac = a[i]/d
             
             if frac in cmap:
                 c = cmap[frac]
@@ -73,7 +77,9 @@ for i in range(3):
                 #print "%.2f %.2f %s"%(a[i], af, "%.1f %.1f %.1f"%colors[-1])
             nr.append(c)
         data.append(nr)
-    ax = plt.subplot(3,1,i+1)
+    ax = plt.subplot(3,1,i+1,axisbg='gray')
+    if len(colors)==1:
+        colors.append( (0,0,0) )
     heatmap_custom_color(data, colors, x_axis=R2, y_axis=R1, x_label=X_AXIS, y_label=Y_AXIS, label=['x','y','theta'][i], ax=ax)    
 T = ', '.join(p.critics)
 
